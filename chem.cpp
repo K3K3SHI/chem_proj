@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cmath>
+#include<fstream>
 #include <vector>
+using namespace std;
 
 class ZerothOrderReactionSimulator {
 private:
@@ -14,8 +16,8 @@ public:
         return initialConcentration - rateConstant * time;
     }
 
-    std::vector<double> simulateOverTime(double startTime, double endTime, double timeStep) {
-        std::vector<double> concentrations;
+    vector<double> simulateOverTime(double startTime, double endTime, double timeStep) {
+        vector<double> concentrations;
         for (double time = startTime; time <= endTime; time += timeStep) {
             concentrations.push_back(simulateAtTime(time));
         }
@@ -35,8 +37,8 @@ public:
         return initialConcentration * exp(-rateConstant * time);
     }
 
-    std::vector<double> simulateOverTime(double startTime, double endTime, double timeStep) {
-        std::vector<double> concentrations;
+    vector<double> simulateOverTime(double startTime, double endTime, double timeStep) {
+        vector<double> concentrations;
         for (double time = startTime; time <= endTime; time += timeStep) {
             concentrations.push_back(simulateAtTime(time));
         }
@@ -57,8 +59,8 @@ public:
         return 1 / (1 / initialConcentrationA + rateConstant * time);
     }
 
-    std::vector<double> simulateOverTime(double startTime, double endTime, double timeStep) {
-        std::vector<double> concentrations;
+    vector<double> simulateOverTime(double startTime, double endTime, double timeStep) {
+        vector<double> concentrations;
         for (double time = startTime; time <= endTime; time += timeStep) {
             concentrations.push_back(simulateAtTime(time));
         }
@@ -68,64 +70,103 @@ public:
 
 int main() {
     int choice;
-    std::cout << "Choose the type of reaction to simulate:" << std::endl;
-    std::cout << "1. Zeroth-order reaction" << std::endl;
-    std::cout << "2. First-order reaction" << std::endl;
-    std::cout << "3. Second-order reaction" << std::endl;
-    std::cin >> choice;
+    cout << "Choose the type of reaction to simulate:" << std::endl;
+    cout << "1. Zeroth-order reaction" << std::endl;
+    cout << "2. First-order reaction" << std::endl;
+    cout << "3. Second-order reaction" << std::endl;
+    cin >> choice;
 
     switch (choice) {
     case 1: {
-        double initialConcentration = 1.0; // Initial concentration of reactant
-        double rateConstant = 0.1; // Rate constant of the reaction
-        double startTime = 0.0; // Start time of the interval
-        double endTime = 10.0; // End time of the interval
-        double timeStep = 1.0; // Time step for simulation
+        double initialConcentration = 1.0; 
+        double rateConstant = 0.1; 
+        double startTime = 0.0; 
+        double endTime = 10.0; 
+        double timeStep = 1.0; 
 
         ZerothOrderReactionSimulator zerothOrderSimulator(initialConcentration, rateConstant);
-        std::vector<double> zerothOrderConcentrations = zerothOrderSimulator.simulateOverTime(startTime, endTime, timeStep);
+        vector<double> zerothOrderConcentrations = zerothOrderSimulator.simulateOverTime(startTime, endTime, timeStep);
 
-        // Output the results
-        for (size_t i = 0; i < zerothOrderConcentrations.size(); ++i) {
-            std::cout << "Time: " << startTime + i * timeStep << ", Concentration: " << zerothOrderConcentrations[i] << std::endl;
+         for (size_t i = 0; i < zerothOrderConcentrations.size(); ++i) {
+            cout << "Time: " << startTime + i * timeStep << ", Concentration: " << zerothOrderConcentrations[i] << std::endl;
         }
+
+        ofstream dataFile("zeroth_order_data.txt");
+        for (size_t i = 0; i < zerothOrderConcentrations.size(); ++i) {
+            dataFile << startTime + i * timeStep << " " << zerothOrderConcentrations[i] << std::endl;
+        }
+        dataFile.close();
+
+        string gnuplotScript = "plot 'zeroth_order_data.txt' with lines title 'Zeroth-order Reaction'\n";
+        ofstream scriptFile("plot_script.gnu");
+        scriptFile << gnuplotScript;
+        scriptFile.close();
+
+        system("gnuplot -persistent plot_script.gnu");
+
         break;
     }
     case 2: {
-        double initialConcentration = 1.0; // Initial concentration of reactant
-        double rateConstant = 0.1; // Rate constant of the reaction
-        double startTime = 0.0; // Start time of the interval
-        double endTime = 10.0; // End time of the interval
-        double timeStep = 1.0; // Time step for simulation
+        double initialConcentration = 1.0; 
+        double rateConstant = 0.4;
+        double startTime = 0.0; 
+        double endTime = 10.0; 
+        double timeStep = 1.0; 
 
         FirstOrderReactionSimulator firstOrderSimulator(initialConcentration, rateConstant);
-        std::vector<double> firstOrderConcentrations = firstOrderSimulator.simulateOverTime(startTime, endTime, timeStep);
+        vector<double> firstOrderConcentrations = firstOrderSimulator.simulateOverTime(startTime, endTime, timeStep);
 
-        // Output the results
         for (size_t i = 0; i < firstOrderConcentrations.size(); ++i) {
-            std::cout << "Time: " << startTime + i * timeStep << ", Concentration: " << firstOrderConcentrations[i] << std::endl;
+            cout << "Time: " << startTime + i * timeStep << ", Concentration: " << firstOrderConcentrations[i] << std::endl;
         }
+
+        ofstream dataFile("first_order_data.txt");
+        for (size_t i = 0; i < firstOrderConcentrations.size(); ++i) {
+            dataFile << startTime + i * timeStep << " " << firstOrderConcentrations[i] << std::endl;
+        }
+        dataFile.close();
+
+        string gnuplotScript = "plot 'first_order_data.txt' with lines title 'First-order Reaction'\n";
+        ofstream scriptFile("plot_script.gnu");
+        scriptFile << gnuplotScript;
+        scriptFile.close();
+
+        system("gnuplot -persistent plot_script.gnu");
+
         break;
     }
     case 3: {
-        double initialConcentrationA = 1.0; // Initial concentration of reactant A
-        double initialConcentrationB = 1.0; // Initial concentration of reactant B
-        double rateConstant = 0.1; // Rate constant of the reaction
-        double startTime = 0.0; // Start time of the interval
-        double endTime = 10.0; // End time of the interval
-        double timeStep = 1.0; // Time step for simulation
+        double initialConcentrationA = 1.0; 
+        double initialConcentrationB = 1.0; 
+        double rateConstant = 0.1; 
+        double startTime = 0.0; 
+        double endTime = 10.0; 
+        double timeStep = 1.0; 
 
         SecondOrderReactionSimulator secondOrderSimulator(initialConcentrationA, initialConcentrationB, rateConstant);
-        std::vector<double> secondOrderConcentrations = secondOrderSimulator.simulateOverTime(startTime, endTime, timeStep);
+        vector<double> secondOrderConcentrations = secondOrderSimulator.simulateOverTime(startTime, endTime, timeStep);
 
-        // Output the results
         for (size_t i = 0; i < secondOrderConcentrations.size(); ++i) {
-            std::cout << "Time: " << startTime + i * timeStep << ", Concentration: " << secondOrderConcentrations[i] << std::endl;
+            cout << "Time: " << startTime + i * timeStep << ", Concentration: " << secondOrderConcentrations[i] << std::endl;
         }
+
+        ofstream dataFile("second_order_data.txt");
+        for (size_t i = 0; i < secondOrderConcentrations.size(); ++i) {
+            dataFile << startTime + i * timeStep << " " << secondOrderConcentrations[i] << std::endl;
+        }
+        dataFile.close();
+
+        string gnuplotScript = "plot 'second_order_data.txt' with lines title 'Second-order Reaction'\n";
+        ofstream scriptFile("plot_script.gnu");
+        scriptFile << gnuplotScript;
+        scriptFile.close();
+
+        system("gnuplot -persistent plot_script.gnu");
+
         break;
     }
     default:
-        std::cout << "Invalid choice!" << std::endl;
+        cout << "Invalid choice!" << std::endl;
     }
 
     return 0;
